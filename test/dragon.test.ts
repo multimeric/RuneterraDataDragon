@@ -1,10 +1,11 @@
-import {LorDataDragon} from "./index";
+import {LorDataDragon, RuneterraSet} from "../src";
+
+const dd = new LorDataDragon({
+    cacheDir: "./testCache"
+});
 
 describe("getSetCards", () => {
     it("Should return an array of cards", async () => {
-        const dd = new LorDataDragon({
-            cacheDir: "./testCache"
-        });
         const cards = await dd.getSetCards(2);
         expect(cards.length).toBeGreaterThan(100);
         expect(cards[0]).toEqual({
@@ -55,9 +56,6 @@ describe("getSetCards", () => {
 
 describe("getGlobalData", () => {
     it("Should return global data", async () => {
-        const dd = new LorDataDragon({
-            cacheDir: "./testCache"
-        });
         const global = await dd.getGlobalData();
         expect(global.spellSpeeds.length).toEqual(3);
         expect(global.vocabTerms[0]).toEqual(
@@ -67,5 +65,19 @@ describe("getGlobalData", () => {
                 "nameRef": "Allegiance"
             },
         )
+    }, 100_000)
+})
+
+describe("getSetBundle", () => {
+    it("can fetch single images", async () => {
+        const image: Buffer | undefined = (await dd.getSetBundle(RuneterraSet.BeyondTheBandlewood)).getEntry("en_us/img/cards/05BC004.png")?.getData();
+        expect(image).not.toBeUndefined();
+    }, 100_000)
+})
+
+describe("getCoreBundle", () => {
+    it("can fetch single images", async () => {
+        const regionImage: Buffer | undefined = (await dd.getCoreBundle()).getEntry("en_us/img/regions/icon-bilgewater.png")?.getData();
+        expect(regionImage).not.toBeUndefined();
     }, 100_000)
 })

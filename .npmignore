@@ -1,0 +1,11 @@
+.git/
+.gitignore
+testCache/
+tsconfig.json
+src/*.ts
+!src/*.d.ts
+.idea/
+*.config*
+node_modules/
+npm-shrinkwrap.json
+test/

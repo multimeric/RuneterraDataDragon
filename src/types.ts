@@ -1,3 +1,11 @@
+export enum Set {
+    Foundations = 1,
+    RisingTides,
+    CallOfTheMountain,
+    EmpiresOfTheAscended,
+    BeyondTheBandlewood
+}
+
 export enum Locale {
     German = "de_de",
     English = "en_us",
