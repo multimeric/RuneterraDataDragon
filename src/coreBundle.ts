@@ -16,7 +16,7 @@ export class CoreBundle extends ZipWrapper {
      * @param region Region name as a lower case string with no spaces, e.g. "shadowisles"
      */
     async getRegionImage(region: string): Promise<Buffer>{
-        return this.getBlob(`${this.props.locale}/img/regions/icon-${region}.png`);
+        return this.getBuffer(`${this.props.locale}/img/regions/icon-${region}.png`);
     }
 
     /**
@@ -24,14 +24,14 @@ export class CoreBundle extends ZipWrapper {
      * @param set Set for which to fetch the icon
      */
     async getSetImage(set: Set): Promise<Buffer>{
-        return this.getBlob(`${this.props.locale}/img/sets/icon${set}.png`);
+        return this.getBuffer(`${this.props.locale}/img/sets/set${set}.png`);
     }
 
     /**
      * Get the core JSON data
      */
     async getGlobalData(): Promise<GlobalData> {
-        const blob = await this.getBlob(`${this.props.locale}/data/globals-${this.props.locale}.json`);
+        const blob = await this.getBuffer(`${this.props.locale}/data/globals-${this.props.locale}.json`);
         return JSON.parse(blob.toString());
     }
 }

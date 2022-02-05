@@ -1,12 +1,37 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const src_1 = require("../src");
-const dd = new src_1.LorDataDragon({
+const rune = __importStar(require("../src"));
+const dd = new rune.DataDragon({
     cacheDir: "./testCache"
 });
-describe("getSetCards", () => {
-    it("Should return an array of cards", async () => {
-        const cards = await dd.getSetCards(2);
+describe("liteSetBundle", () => {
+    it("can fetch single card images", async () => {
+        const bundle = await dd.getLiteSetBundle(rune.Set.BeyondTheBandlewood, rune.Locale.English);
+        const image = await bundle.getCardImage("05BC004");
+        expect(image.length).toBeGreaterThan(1000);
+    }, 100000);
+    it("can return an array of cards", async () => {
+        const bundle = await dd.getLiteSetBundle(rune.Set.RisingTides, rune.Locale.English);
+        const cards = await bundle.getCards();
         expect(cards.length).toBeGreaterThan(100);
         expect(cards[0]).toEqual({
             "associatedCards": [],
@@ -52,28 +77,25 @@ describe("getSetCards", () => {
         });
     }, 100000);
 });
-describe("getGlobalData", () => {
-    it("Should return global data", async () => {
-        const global = await dd.getGlobalData();
+describe("coreBundle", () => {
+    it("can fetch single region images", async () => {
+        const bundle = await dd.getCoreBundle(rune.Locale.English);
+        const regionImage = await bundle.getRegionImage("bilgewater");
+        expect(regionImage.length).toBeGreaterThan(1000);
+    }, 100000);
+    it("can fetch single set images", async () => {
+        const bundle = await dd.getCoreBundle(rune.Locale.English);
+        const regionImage = await bundle.getSetImage(rune.Set.CallOfTheMountain);
+        expect(regionImage.length).toBeGreaterThan(1000);
+    }, 100000);
+    it("can return global data", async () => {
+        const bundle = await dd.getCoreBundle(rune.Locale.English);
+        const global = await bundle.getGlobalData();
         expect(global.spellSpeeds.length).toEqual(3);
         expect(global.vocabTerms[0]).toEqual({
             "description": "When you summon this, it gets its allegiance bonus if the top card of your deck matches its region.",
             "name": "Allegiance",
             "nameRef": "Allegiance"
         });
-    }, 100000);
-});
-describe("getSetBundle", () => {
-    it("can fetch single images", async () => {
-        var _a;
-        const image = (_a = (await dd.getSetBundle(src_1.RuneterraSet.BeyondTheBandlewood)).getEntry("en_us/img/cards/05BC004.png")) === null || _a === void 0 ? void 0 : _a.getData();
-        expect(image).not.toBeUndefined();
-    }, 100000);
-});
-describe("getCoreBundle", () => {
-    it("can fetch single images", async () => {
-        var _a;
-        const regionImage = (_a = (await dd.getCoreBundle()).getEntry("en_us/img/regions/icon-bilgewater.png")) === null || _a === void 0 ? void 0 : _a.getData();
-        expect(regionImage).not.toBeUndefined();
     }, 100000);
 });

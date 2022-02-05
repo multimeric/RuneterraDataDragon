@@ -1,2 +1,2 @@
 export * from "./types";
-export { LorDataDragon } from "./dragon";
+export { DataDragon } from "./dragon";

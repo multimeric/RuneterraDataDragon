@@ -10,7 +10,7 @@ export interface ZipWrapperProps {
 export abstract class ZipWrapper {
     props: ZipWrapperProps
 
-    async getBlob(path: string): Promise<Buffer> {
+    async getBuffer(path: string): Promise<Buffer> {
         const entry = this.props.zip.getEntry(path);
         if (!entry){
             throw new Error(`${path} could not be found in zip file!`);

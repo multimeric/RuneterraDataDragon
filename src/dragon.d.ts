@@ -1,31 +1,16 @@
 /// <reference types="node" />
-import AdmZip from "adm-zip";
-import { Card, GlobalData, Locale, RuneterraSet } from "./types";
+import { Locale, Set } from "./types";
+import { CoreBundle } from "./coreBundle";
+import { FullSetBundle } from "./fullSetBundle";
+import { LiteSetBundle } from "./liteSetBundle";
 interface DataDragonProps {
-    /**
-     * The version of the core bundle to use. This can be a specific version such as `1.0.0`, or
-     * it can be "latest" (the default)
-     */
-    coreVersion?: string;
-    /**
-     * An object that maps set numbers to versions. For example `{"5": "2.14.0"}` indicates to
-     * use version 2.14 of "Beyond the Bandlewood"
-     */
-    setVersions?: Record<string, string>;
     /**
      * Directory in which to cache downloaded data
      */
     cacheDir?: string;
-    /**
-     * The locale (language etc.) to fetch data for
-     */
-    locale?: Locale;
 }
-export declare class LorDataDragon {
-    coreVersion: string;
-    setVersions: Record<string, string>;
+export declare class DataDragon {
     cacheDir: string | null;
-    locale: Locale;
     constructor(props: DataDragonProps);
     recoverFromCache(url: string): Promise<Buffer | null>;
     storeToCache(url: string, data: Buffer): Promise<any>;
@@ -37,28 +22,33 @@ export declare class LorDataDragon {
     /**
      * Gets the zip file URL for a given set
      * @param set The set for which to find the URL
+     * @param version The bundle version to use
      * @param lite If true, request the lite version of the zip file
      */
-    getSetUrl(set: RuneterraSet, lite?: boolean): string;
+    static getSetUrl(set: Set, version?: string, lite?: boolean): string;
     /**
-     * Asynchronously returns an array of zipfile entries
+     * Returns an object representing a full set bundle
      * @param set The set for which to download data
-     * @param lite If true, return the lite bundle
+     * @param locale The locale (language etc) for which to fetch the bundle
+     * @param version The bundle version to use
      */
-    getSetBundle(set: RuneterraSet, lite?: boolean): Promise<AdmZip>;
+    getFullSetBundle(set: Set, locale: Locale, version?: string): Promise<FullSetBundle>;
     /**
-     * Returns a list of Card objects for a given set
-     * @param setNumber The set index to query
+     * Returns an object representing a lite set bundle
+     * @param set The set for which to download data
+     * @param locale The locale (language etc) for which to fetch the bundle
+     * @param version The bundle version to use
      */
-    getSetCards(setNumber: number): Promise<Card[]>;
+    getLiteSetBundle(set: Set, locale: Locale, version?: string): Promise<LiteSetBundle>;
     /**
      * Gets the URL for the core bundle
      */
-    getCoreUrl(): string;
+    static getCoreUrl(locale: Locale, version?: string): string;
     /**
-     * Returns the downloaded zip file
+     * Downloads the core bundle and returns an object that can be used to access its contents
+     * @param locale The locale (language etc) for which to fetch the bundle
+     * @param version The bundle version to use. Defaults to the latest version.
      */
-    getCoreBundle(): Promise<AdmZip>;
-    getGlobalData(): Promise<GlobalData>;
+    getCoreBundle(locale: Locale, version?: string): Promise<CoreBundle>;
 }
 export {};

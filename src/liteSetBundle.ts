@@ -15,8 +15,8 @@ export class LiteSetBundle extends ZipWrapper {
     /**
      * Returns a list of Card objects for a given set
      */
-    async getSetCards(): Promise<Card[]> {
-        const blob = this.getBlob(`${this.props.locale}/data/set${this.props.set}-${this.props.locale}.json`);
+    async getCards(): Promise<Card[]> {
+        const blob = await this.getBuffer(`${this.props.locale}/data/set${this.props.set}-${this.props.locale}.json`);
         return JSON.parse(blob.toString());
     }
 
@@ -24,8 +24,7 @@ export class LiteSetBundle extends ZipWrapper {
      * Returns a card image blob for the given card ID
      * @param cardCode Code for the card for which to return the image
      */
-    async getCardImage(cardCode: number): Promise<Card[]> {
-        const blob = this.getBlob(`${this.props.locale}/img/cards/${cardCode}.png`);
-        return JSON.parse(blob.toString());
+    async getCardImage(cardCode: string): Promise<Buffer> {
+        return this.getBuffer(`${this.props.locale}/img/cards/${cardCode}.png`);
     }
 }

@@ -1,12 +1,20 @@
-import {LorDataDragon, RuneterraSet} from "../src";
+import * as rune from "../src";
 
-const dd = new LorDataDragon({
+const dd = new rune.DataDragon({
     cacheDir: "./testCache"
 });
 
-describe("getSetCards", () => {
-    it("Should return an array of cards", async () => {
-        const cards = await dd.getSetCards(2);
+describe("liteSetBundle", () => {
+
+    it("can fetch single card images", async () => {
+        const bundle = await dd.getLiteSetBundle(rune.Set.BeyondTheBandlewood, rune.Locale.English);
+        const image  = await bundle.getCardImage("05BC004");
+        expect(image.length).toBeGreaterThan(1000);
+    }, 100_000)
+
+    it("can return an array of cards", async () => {
+        const bundle = await dd.getLiteSetBundle(rune.Set.RisingTides, rune.Locale.English);
+        const cards = await bundle.getCards();
         expect(cards.length).toBeGreaterThan(100);
         expect(cards[0]).toEqual({
                 "associatedCards": [],
@@ -54,9 +62,22 @@ describe("getSetCards", () => {
     }, 100_000)
 })
 
-describe("getGlobalData", () => {
-    it("Should return global data", async () => {
-        const global = await dd.getGlobalData();
+describe("coreBundle", () => {
+    it("can fetch single region images", async () => {
+        const bundle = await dd.getCoreBundle(rune.Locale.English);
+        const regionImage = await bundle.getRegionImage("bilgewater");
+        expect(regionImage.length).toBeGreaterThan(1000);
+    }, 100_000)
+
+    it("can fetch single set images", async () => {
+        const bundle = await dd.getCoreBundle(rune.Locale.English);
+        const regionImage = await bundle.getSetImage(rune.Set.CallOfTheMountain);
+        expect(regionImage.length).toBeGreaterThan(1000);
+    }, 100_000)
+
+    it("can return global data", async () => {
+        const bundle = await dd.getCoreBundle(rune.Locale.English);
+        const global = await bundle.getGlobalData();
         expect(global.spellSpeeds.length).toEqual(3);
         expect(global.vocabTerms[0]).toEqual(
             {
@@ -65,19 +86,5 @@ describe("getGlobalData", () => {
                 "nameRef": "Allegiance"
             },
         )
-    }, 100_000)
-})
-
-describe("getSetBundle", () => {
-    it("can fetch single images", async () => {
-        const image: Buffer | undefined = (await dd.getSetBundle(RuneterraSet.BeyondTheBandlewood)).getEntry("en_us/img/cards/05BC004.png")?.getData();
-        expect(image).not.toBeUndefined();
-    }, 100_000)
-})
-
-describe("getCoreBundle", () => {
-    it("can fetch single images", async () => {
-        const regionImage: Buffer | undefined = (await dd.getCoreBundle()).getEntry("en_us/img/regions/icon-bilgewater.png")?.getData();
-        expect(regionImage).not.toBeUndefined();
     }, 100_000)
 })

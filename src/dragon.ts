@@ -10,37 +10,16 @@ import {LiteSetBundle} from "./liteSetBundle";
 
 interface DataDragonProps {
     /**
-     * The version of the core bundle to use. This can be a specific version such as `1.0.0`, or
-     * it can be "latest" (the default)
-     */
-    coreVersion?: string,
-    /**
-     * An object that maps set numbers to versions. For example `{"5": "2.14.0"}` indicates to
-     * use version 2.14 of "Beyond the Bandlewood"
-     */
-    setVersions?: Record<string, string>,
-    /**
      * Directory in which to cache downloaded data
      */
     cacheDir?: string,
-
-    /**
-     * The locale (language etc.) to fetch data for
-     */
-    locale?: Locale
 }
 
-export class LorDataDragon {
-    coreVersion: string
-    setVersions: Record<string, string>
+export class DataDragon {
     cacheDir: string | null
-    locale: Locale
 
     constructor(props: DataDragonProps) {
-        this.coreVersion = props?.coreVersion || "latest";
-        this.setVersions = props?.setVersions || {};
         this.cacheDir = props?.cacheDir || null;
-        this.locale = props?.locale || Locale.English;
     }
 
     async recoverFromCache(url: string): Promise<Buffer | null> {
@@ -94,11 +73,11 @@ export class LorDataDragon {
     /**
      * Gets the zip file URL for a given set
      * @param set The set for which to find the URL
+     * @param version The bundle version to use
      * @param lite If true, request the lite version of the zip file
      */
-    getSetUrl(set: Set, lite?: boolean): string {
-        const setString = set.toString();
-        const version = setString in this.setVersions ? this.setVersions[setString] : "latest";
+    static getSetUrl(set: Set, version?: string, lite?: boolean): string {
+        version = version || "latest";
         if (lite) {
             return `https://dd.b.pvp.net/${version}/set${set}-lite-en_us.zip`;
         }
@@ -108,13 +87,15 @@ export class LorDataDragon {
     /**
      * Returns an object representing a full set bundle
      * @param set The set for which to download data
+     * @param locale The locale (language etc) for which to fetch the bundle
+     * @param version The bundle version to use
      */
-    async getFullSetBundle(set: Set): Promise<FullSetBundle> {
-        const url = this.getSetUrl(set, false);
+    async getFullSetBundle(set: Set, locale:Locale, version?: string): Promise<FullSetBundle> {
+        const url = DataDragon.getSetUrl(set, version, false);
         const buff = await this.getUrlBuffer(url);
         return new FullSetBundle({
             zip: new AdmZip(buff),
-            locale: this.locale,
+            locale: locale,
             set: set
         })
     }
@@ -122,13 +103,15 @@ export class LorDataDragon {
     /**
      * Returns an object representing a lite set bundle
      * @param set The set for which to download data
+     * @param locale The locale (language etc) for which to fetch the bundle
+     * @param version The bundle version to use
      */
-    async getLiteSetBundle(set: Set): Promise<LiteSetBundle> {
-        const url = this.getSetUrl(set, true);
+    async getLiteSetBundle(set: Set, locale:Locale, version? : string): Promise<LiteSetBundle> {
+        const url = DataDragon.getSetUrl(set,  version, true);
         const buff = await this.getUrlBuffer(url);
         return new LiteSetBundle({
             zip: new AdmZip(buff),
-            locale: this.locale,
+            locale: locale,
             set: set
         })
     }
@@ -136,19 +119,22 @@ export class LorDataDragon {
     /**
      * Gets the URL for the core bundle
      */
-    getCoreUrl(): string {
-        return `https://dd.b.pvp.net/${this.coreVersion}/core-${this.locale}.zip`;
+    static getCoreUrl(locale: Locale, version?: string): string {
+        version = version || "latest";
+        return `https://dd.b.pvp.net/${version}/core-${locale}.zip`;
     }
 
     /**
-     * Returns the downloaded zip file
+     * Downloads the core bundle and returns an object that can be used to access its contents
+     * @param locale The locale (language etc) for which to fetch the bundle
+     * @param version The bundle version to use. Defaults to the latest version.
      */
-    async getCoreBundle(): Promise<CoreBundle> {
-        const url = this.getCoreUrl();
+    async getCoreBundle(locale: Locale, version?: string): Promise<CoreBundle> {
+        const url = DataDragon.getCoreUrl(locale, version);
         const buff = await this.getUrlBuffer(url);
         return new CoreBundle({
             zip: new AdmZip(buff),
-            locale: this.locale,
+            locale: locale,
         });
     }
 

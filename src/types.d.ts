@@ -1,4 +1,4 @@
-export declare enum RuneterraSet {
+export declare enum Set {
     Foundations = 1,
     RisingTides = 2,
     CallOfTheMountain = 3,
